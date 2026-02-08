@@ -7,15 +7,23 @@ int main(int argc, char *argv[]) {
   setbuf(stdout, NULL);
   char in[100];
 
-  do{
+  while(1){
     printf("$ ");
-
     fgets(in, 100, stdin);
+    in[strcspn(in, "\n")] = '\0';
 
-    in[strlen(in) - 1] = '\0';
-    if(strcmp(in, "exit")!=0)
-      printf("%s: command not found\n", in);
-  }while(strcmp(in, "exit")!=0);
+    char *ec = strstr(in, "echo");
+    if(ec)
+      if(ec == in){
+        printf("%s\n", in + 5);
+        continue;
+      }
+
+    if(!strcmp(in, "exit"))
+      break;
+
+    printf("%s: command not found\n", in);
+  }
 
   return 0;
 }
