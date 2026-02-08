@@ -5,16 +5,17 @@
 int main(int argc, char *argv[]) {
   // Flush after every printf
   setbuf(stdout, NULL);
+  char in[100];
 
-  while(1){
+  do{
     printf("$ ");
 
-    char in[100];
     fgets(in, 100, stdin);
 
     in[strlen(in) - 1] = '\0';
-    printf("%s: command not found\n", in);
-  }
+    if(strcmp(in, "exit")!=0)
+      printf("%s: command not found\n", in);
+  }while(strcmp(in, "exit")!=0);
 
   return 0;
 }
