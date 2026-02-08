@@ -6,13 +6,15 @@ int main(int argc, char *argv[]) {
   // Flush after every printf
   setbuf(stdout, NULL);
 
-  printf("$ ");
+  while(1){
+    printf("$ ");
 
-  char in[100];
-  fgets(in, 100, stdin);
+    char in[100];
+    fgets(in, 100, stdin);
 
-  in[strlen(in) - 1] = '\0';
-  printf("%s: command not found\n", in);
+    in[strlen(in) - 1] = '\0';
+    printf("%s: command not found\n", in);
+  }
 
   return 0;
 }
