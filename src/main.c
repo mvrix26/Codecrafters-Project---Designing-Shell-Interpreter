@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
         }
 
         if(!found) {
-          printf("%s: command not found", arg);
+          printf("%s: not found", arg);
         }
 
         free(cpy_path);
