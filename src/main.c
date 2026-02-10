@@ -31,10 +31,15 @@ int main(int argc, char *argv[]) {
       char *arg = strtok_r(NULL, "", &save);
       if(arg) printf("%s\n", arg);
     }
+    else if(!strcmp(cmd_tok, "pwd")) {
+      char cwd[1024];
+      getcwd(cwd, sizeof(cwd));
+      printf("%s\n", cwd);
+    }
     else if(!strcmp(cmd_tok, "type")) {
       char *arg = strtok_r(NULL, " \t", &save);
       if(!arg) {}
-      else if(!strcmp(arg, "exit") || !strcmp(arg, "echo") || !strcmp(arg, "type")) {
+      else if(!strcmp(arg, "exit") || !strcmp(arg, "echo") || !strcmp(arg, "type") ||!strcmp(arg, "pwd")) {
         printf("%s is a shell builtin\n", arg);
       }
       else {
