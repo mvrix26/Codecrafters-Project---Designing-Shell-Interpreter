@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 
 int main(int argc, char *argv[]) {
   // Flush after every printf
@@ -12,7 +13,6 @@ int main(int argc, char *argv[]) {
     char in[512];
     if(!fgets(in, 512, stdin)) break;
     in[strcspn(in, "\n")] = '\0';
-
 
     char *save = NULL;
     char *cpy_in = strdup(in);
@@ -29,13 +29,13 @@ int main(int argc, char *argv[]) {
     }
     else if(!strcmp(cmd_tok, "echo")) {
       char *arg = strtok_r(NULL, "", &save);
-      if(arg) printf("%s", arg);
+      if(arg) printf("%s\n", arg);
     }
     else if(!strcmp(cmd_tok, "type")) {
       char *arg = strtok_r(NULL, " \t", &save);
       if(!arg) {}
       else if(!strcmp(arg, "exit") || !strcmp(arg, "echo") || !strcmp(arg, "type")) {
-        printf("%s is a shell builtin", arg);
+        printf("%s is a shell builtin\n", arg);
       }
       else {
         char *path = getenv("PATH");
@@ -48,24 +48,58 @@ int main(int argc, char *argv[]) {
           snprintf(full_path, sizeof(full_path), "%s/%s", dir, arg);
           if(!access(full_path, X_OK)) {
             found = 1;
-            printf("%s is %s", arg, full_path);
+            printf("%s is %s\n", arg, full_path);
             break;
           }
           dir = strtok(NULL, ":");
         }
 
         if(!found) {
-          printf("%s: not found", arg);
+          printf("%s: not found\n", arg);
         }
 
         free(cpy_path);
       }
     }
     else {
-      printf("%s: command not found", in);
+      char *path = getenv("PATH");
+      char *cpy_path = strdup(path);
+      char *dir = strtok(cpy_path, ":");
+      char full_path[1024];
+      int found = 0;
+
+      while(dir) {
+        snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd_tok);
+        if(!access(full_path, X_OK)){
+          char *args[64] = {NULL};
+          char *arg = strtok_r(NULL, " \t", &save);
+          args[0] = cmd_tok;
+          int i = 1;
+          while(arg) {
+            args[i++] = arg;
+            arg = strtok_r(NULL, " \t", &save);
+          }
+          args[i] = NULL;
+
+          found = 1;
+          pid_t pid = fork();
+          if(!pid){
+            execv(full_path, args);
+          }
+          else {
+            wait(NULL);
+            break;
+          }
+        }
+        dir = strtok(NULL, ":");
+      }
+
+      free(cpy_path);
+      if(!found){
+        printf("%s: command not found\n", cmd_tok);
+      }
     }
 
-    putchar('\n');
     free(cpy_in);
   }
 
