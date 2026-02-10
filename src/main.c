@@ -38,8 +38,19 @@ int main(int argc, char *argv[]) {
     }
     else if(!strcmp(cmd_tok, "cd")) {
       char *arg = strtok_r(NULL, " \t", &save);
-      if(arg && chdir(arg))
-        printf("%s: %s: No such file or directory\n", cmd_tok, arg);
+      if(arg) {
+        if(!strcmp(arg, "~")) {
+          char *home = getenv("HOME");
+          if(home) {
+            if(chdir(home))
+              printf("%s: %s: No such file or directory\n", cmd_tok, home);
+          }
+          else printf("%s: HOME not set\n", cmd_tok);
+
+        }
+        else if(chdir(arg))
+          printf("%s: %s: No such file or directory\n", cmd_tok, arg);
+      }
     }
     else if(!strcmp(cmd_tok, "type")) {
       char *arg = strtok_r(NULL, " \t", &save);
