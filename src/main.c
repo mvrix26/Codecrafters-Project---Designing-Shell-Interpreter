@@ -36,10 +36,15 @@ int main(int argc, char *argv[]) {
       getcwd(cwd, sizeof(cwd));
       printf("%s\n", cwd);
     }
+    else if(!strcmp(cmd_tok, "cd")) {
+      char *arg = strtok_r(NULL, " \t", &save);
+      if(arg && chdir(arg))
+        printf("%s: %s: No such file or directory\n", cmd_tok, arg);
+    }
     else if(!strcmp(cmd_tok, "type")) {
       char *arg = strtok_r(NULL, " \t", &save);
       if(!arg) {}
-      else if(!strcmp(arg, "exit") || !strcmp(arg, "echo") || !strcmp(arg, "type") ||!strcmp(arg, "pwd")) {
+      else if(!strcmp(arg, "exit") || !strcmp(arg, "echo") || !strcmp(arg, "type") ||!strcmp(arg, "pwd") || !strcmp(arg, "cd")) {
         printf("%s is a shell builtin\n", arg);
       }
       else {
