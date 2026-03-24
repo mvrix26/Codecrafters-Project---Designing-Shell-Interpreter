@@ -45,7 +45,7 @@ int parse(char *in, char **args) {
                     *w = *r;
                     w++;
                 }
-            } else {
+            } else { //outside of any quotes
                 if (*(r + 1) == '\0')
                     break;
                 *w = *(r + 1);
