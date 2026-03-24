@@ -1,5 +1,4 @@
 #include "parser.h"
-#include <stddef.h>
 #include <string.h>
 
 int parse(char *in, char **args) {
@@ -26,20 +25,17 @@ int parse(char *in, char **args) {
                 w++;
             } else
                 dq_flag = !dq_flag;
-        } else if ((*r == ' ' || *r == '\t') && !sq_flag && !dq_flag) {
+        } else if (strchr(" \t", *r) && !sq_flag && !dq_flag) {
             *w = '\0';
             w++;
-            while (*(r + 1) == ' ' || *(r + 1) == '\t')
+            while (strchr(" \t", *(r + 1)))
                 r++;
             if (*(r + 1) != '\0')
                 args[argc++] = w;
         } else if (*r == '\\') {
-            if (!sq_flag && !dq_flag) {
-                if (*(r + 1) == '\0')
-                    break;
-                *w = *(r + 1);
+            if (sq_flag) {
+                *w = *r;
                 w++;
-                r++;
             } else if (dq_flag) {
                 if (strchr("\"\\$`", *(r + 1))) {
                     *w = *(r + 1);
@@ -49,6 +45,12 @@ int parse(char *in, char **args) {
                     *w = *r;
                     w++;
                 }
+            } else {
+                if (*(r + 1) == '\0')
+                    break;
+                *w = *(r + 1);
+                w++;
+                r++;
             }
         } else {
             *w = *r;
