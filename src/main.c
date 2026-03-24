@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
         int parse_cnt = parse(in, args);
         if (!parse_cnt) continue;
 
-        int saved_stdout = setup_redirection(args, &parse_cnt);
-        if (saved_stdout == -2)
+        int saved_stdout = -1, saved_stderr = -1;
+        if (setup_redirection(args, &parse_cnt, &saved_stdout, &saved_stderr) != 0)
             continue;
 
         if (is_builtin(args[0])) {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
             exec_external(args);
         }
 
-        restore_redirection(saved_stdout);
+        restore_redirection(saved_stdout, saved_stderr);
     }
 
     return 0;
