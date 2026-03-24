@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "builtins.h"
 #include "executor.h"
+#include "redirector.h"
 
 int main(int argc, char *argv[]) {
     // Flush after every printf
@@ -19,11 +20,17 @@ int main(int argc, char *argv[]) {
         int parse_cnt = parse(in, args);
         if (!parse_cnt) continue;
 
+        int saved_stdout = setup_redirection(args, &parse_cnt);
+        if (saved_stdout == -2)
+            continue;
+
         if (is_builtin(args[0])) {
             exec_builtin(args, parse_cnt);
         } else {
             exec_external(args);
         }
+
+        restore_redirection(saved_stdout);
     }
 
     return 0;

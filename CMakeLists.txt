@@ -13,6 +13,8 @@ add_executable(shell ${SOURCE_FILES}
         src/builtins.c
         src/builtins.h
         src/executor.c
-        src/executor.h)
+        src/executor.h
+        src/redirector.c
+        src/redirector.h)
 
 target_link_libraries(shell PRIVATE readline)
